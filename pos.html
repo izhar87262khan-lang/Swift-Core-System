@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NK Mobile Shop - POS & Inventory System</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0071e3;
+            --success: #34c759;
+            --danger: #ff3b30;
+            --warning: #ff9500;
+            --bg: #f5f5f7;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text: #1d1d1f;
+            --border: #d2d2d7;
+            --radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 0 20px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            flex: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+            transition: var(--transition);
+            animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
+        }
+
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.97) translateY(15px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        h2 {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #515154;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+            background: #fff;
+            transform: scale(1.01);
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            box-shadow: 0 6px 20px rgba(0, 113, 227, 0.3);
+            margin-top: 5px;
+        }
+
+        .btn:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 113, 227, 0.4);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #fafafa;
+            font-weight: 600;
+            color: #515154;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        
+        tr {
+            transition: var(--transition);
+        }
+        tr:hover {
+            background-color: #f9f9fb;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-cash { background: #e8f8ed; color: var(--success); }
+        .badge-credit { background: #fff4e5; color: var(--warning); }
+
+        .summary-box {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 18px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: var(--transition);
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        .stat-card h3 { font-size: 12px; color: #86868b; margin-bottom: 6px; font-weight: 500; }
+        .stat-card p { font-size: 18px; font-weight: 700; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>NK MOBILE SHOP - POS System</h1>
+        <span id="live-time" style="font-size: 14px; font-weight: 500; color: #86868b;"></span>
+    </header>
+
+    <div class="container">
+        <!-- Left Side: Add Stock & Purchase Detail with Phone & Auto Balance -->
+        <div class="card">
+            <h2>📦 Add New Stock & Purchase</h2>
+            <form id="stock-form">
+                <div class="form-group">
+                    <label>Item / Model Name</label>
+                    <input type="text" id="item-name" placeholder="e.g. iPhone 13 Pro Max / Samsung S22" required>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>Customer / Supplier Name</label>
+                        <input type="text" id="supplier-name" placeholder="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Customer / Supplier Phone</label>
+                        <input type="text" id="supplier-phone" placeholder="0300-1234567" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="form-group">
+                        <label>Total Price (Rs.)</label>
+                        <input type="number" id="item-price" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Type</label>
+                        <select id="pay-type">
+                            <option value="Cash">Cash</option>
+                            <option value="Credit">Credit (Udhar)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>Paid Amount (Rs.)</label>
+                        <input type="number" id="paid-amount" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Remaining Balance (Auto Udhar)</label>
+                        <input type="number" id="remaining-amount" placeholder="Auto calculated" readonly style="background: #f2f2f7; font-weight: 600; color: var(--danger);">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Save Stock & Ledger Record</button>
+            </form>
+        </div>
+
+        <!-- Right Side: Live Stock & Ledger Records -->
+        <div class="card">
+            <h2>📊 Stock & Udhar Ledger Record</h2>
+            
+            <div class="summary-box">
+                <div class="stat-card">
+                    <h3>Total Asset Value</h3>
+                    <p id="total-val">Rs. 0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Paid</h3>
+                    <p id="total-paid" style="color: var(--success);">Rs. 0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Remaining Udhar</h3>
+                    <p id="total-rem" style="color: var(--danger);">Rs. 0</p>
+                </div>
+            </div>
+
+            <div style="overflow-x: auto; max-height: 400px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item & Name</th>
+                            <th>Phone</th>
+                            <th>Price</th>
+                            <th>Type</th>
+                            <th>Paid</th>
+                            <th>Remaining</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-table-body">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #86868b;">No stock recorded yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Live Clock
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('live-time').innerText = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        }, 1000);
+
+        // Auto Calculate Remaining Balance
+        const priceInput = document.getElementById('item-price');
+        const paidInput = document.getElementById('paid-amount');
+        const remInput = document.getElementById('remaining-amount');
+
+        function calcRemaining() {
+            const price = parseFloat(priceInput.value) || 0;
+            const paid = parseFloat(paidInput.value) || 0;
+            const rem = price - paid;
+            remInput.value = rem >= 0 ? rem : 0;
+        }
+
+        priceInput.addEventListener('input', calcRemaining);
+        paidInput.addEventListener('input', calcRemaining);
+
+        // Storage & Rendering
+        const stockForm = document.getElementById('stock-form');
+        const stockTableBody = document.getElementById('stock-table-body');
+        
+        let stockList = JSON.parse(localStorage.getItem('nk_stock_v2')) || [];
+
+        function renderStock() {
+            stockTableBody.innerHTML = '';
+            if (stockList.length === 0) {
+                stockTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #86868b;">No stock recorded yet</td></tr>`;
+                document.getElementById('total-val').innerText = 'Rs. 0';
+                document.getElementById('total-paid').innerText = 'Rs. 0';
+                document.getElementById('total-rem').innerText = 'Rs. 0';
+                return;
+            }
+
+            let tVal = 0, tPaid = 0, tRem = 0;
+
+            stockList.forEach(item => {
+                tVal += item.price;
+                tPaid += item.paid;
+                tRem += item.rem;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${item.name}</strong><br><small style="color:#666">${item.supp}</small></td>
+                    <td>${item.phone}</td>
+                    <td>Rs. ${item.price.toLocaleString()}</td>
+                    <td><span class="badge ${item.type === 'Cash' ? 'badge-cash' : 'badge-credit'}">${item.type}</span></td>
+                    <td>Rs. ${item.paid.toLocaleString()}</td>
+                    <td style="color: ${item.rem > 0 ? 'var(--danger)' : 'inherit'}; font-weight: 600;">Rs. ${item.rem.toLocaleString()}</td>
+                `;
+                stockTableBody.appendChild(row);
+            });
+
+            document.getElementById('total-val').innerText = 'Rs. ' + tVal.toLocaleString();
+            document.getElementById('total-paid').innerText = 'Rs. ' + tPaid.toLocaleString();
+            document.getElementById('total-rem').innerText = 'Rs. ' + tRem.toLocaleString();
+        }
+
+        stockForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newItem = {
+                name: document.getElementById('item-name').value,
+                supp: document.getElementById('supplier-name').value,
+                phone: document.getElementById('supplier-phone').value,
+                price: parseFloat(priceInput.value),
+                type: document.getElementById('pay-type').value,
+                paid: parseFloat(paidInput.value),
+                rem: parseFloat(remInput.value)
+            };
+
+            stockList.unshift(newItem); // New item appears on top with animation effect
+            localStorage.setItem('nk_stock_v2', JSON.stringify(stockList));
+            renderStock();
+            stockForm.reset();
+            remInput.value = '';
+        });
+
+        renderStock();
+    </script>
+</body>
+</html>
