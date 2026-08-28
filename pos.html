@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NK MOBILE SHOP - Wholesale & Dealer Management System</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%); }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; }
+        .logo { padding: 25px 20px; font-size: 19px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); letter-spacing: 0.5px; }
+        .nav-menu { list-style: none; padding: 20px 15px; display: flex; flex-direction: column; gap: 8px; }
+        .nav-menu li a { display: flex; align-items: center; gap: 12px; padding: 13px 16px; color: var(--text-muted); text-decoration: none; border-radius: 12px; font-weight: 500; transition: 0.3s; cursor: pointer; font-size: 14px; }
+        .nav-menu li.active a, .nav-menu li a:hover { background: var(--primary); color: #fff; box-shadow: 0 0 20px var(--primary-glow); }
+
+        /* Main Workspace */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        header { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(10px); padding: 15px 30px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center; }
+        .shop-badge { font-size: 17px; font-weight: 700; color: var(--text-main); letter-spacing: 0.5px; }
+        .offline-status { background: rgba(16, 185, 129, 0.15); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* Views */
+        .view-section { display: none; flex: 1; overflow: hidden; padding: 20px; gap: 20px; }
+        .view-section.active-view { display: flex; }
+
+        /* POS & Wholesale Layouts */
+        .left-panel { flex: 2; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 5px; }
+        .right-panel { flex: 1.3; background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; display: flex; flex-direction: column; padding: 20px; }
+
+        /* Glass Cards */
+        .glass-card { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px; }
+        .card-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Inputs & Controls */
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .input-field, select.input-field { flex: 1; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); padding: 11px 14px; border-radius: 10px; color: #fff; outline: none; transition: 0.3s; font-size: 14px; }
+        .input-field:focus, select.input-field:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+        select.input-field option { background: #0f172a; color: #fff; }
+
+        /* Search Results Dropdown List Container */
+        .search-results-box { position: relative; }
+        .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px; max-height: 200px; overflow-y: auto; z-index: 100; display: none; margin-top: 5px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .suggestion-item { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
+        .suggestion-item:hover { background: rgba(99, 102, 241, 0.2); color: var(--primary); }
+        .suggestion-item span { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text-muted); }
+
+        /* Tables */
+        .styled-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+        .styled-table th, .styled-table td { padding: 11px 8px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; }
+        .styled-table th { color: var(--text-muted); font-weight: 600; }
+
+        /* Action Buttons */
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { flex: 1; background: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; text-align: center; font-size: 14px; }
+        .btn:hover { opacity: 0.9; box-shadow: 0 0 15px var(--primary-glow); }
+        .btn-whatsapp { background: #25d366; }
+        .btn-whatsapp:hover { box-shadow: 0 0 15px rgba(37, 211, 102, 0.4); }
+        .btn-danger { background: var(--danger); }
+        .btn-warning { background: var(--warning); color: #000; }
+
+        .total-box { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 14px; font-weight: 600; }
+        .total-row { display: flex; justify-content: space-between; }
+
+        .footer-credit { font-size: 11px; color: var(--text-muted); text-align: center; padding: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">📱 NK MOBILE SHOP</div>
+        <ul class="nav-menu">
+            <li id="menu-home" class="active"><a onclick="switchView('home')">🏠 Home Dashboard</a></li>
+            <li id="menu-pos"><a onclick="switchView('pos')">🛒 Wholesale Billing</a></li>
+            <li id="menu-stock"><a onclick="switchView('stock')">📦 Stock & Suppliers</a></li>
+            <li id="menu-ledger"><a onclick="switchView('ledger')">📖 Wholesale Dealer Khata</a></li>
+            <li id="menu-backup"><a onclick="switchView('backup')">💾 Backup & Settings</a></li>
+        </ul>
+        <div class="footer-credit">Hazarganji Quetta</div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="main">
+        <header>
+            <div class="shop-badge">NK MOBILE SHOP - Wholesale Management</div>
+            <div class="offline-status">🟢 Offline Ready</div>
+        </header>
+
+        <!-- VIEW 0: HOME DASHBOARD -->
+        <div id="view-home" class="view-section active-view" style="flex-direction: column; overflow-y: auto; gap: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">Total Stock Items</h3>
+                    <p id="dashStockCount" style="font-size: 24px; font-weight: bold; color: var(--primary);">0</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">Total Wholesale Parties</h3>
+                    <p id="dashCustCount" style="font-size: 24px; font-weight: bold; color: var(--accent);">0</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">Total Market Udhar</h3>
+                    <p id="dashUdharTotal" style="font-size: 24px; font-weight: bold; color: var(--danger);">Rs. 0</p>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-title"><span>⚡ Quick Actions</span></div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn" onclick="switchView('pos')">🛒 New Wholesale Bill</button>
+                    <button class="btn btn-warning" onclick="switchView('stock')">📦 Manage Stock / Dealer</button>
+                    <button class="btn btn-whatsapp" onclick="switchView('ledger')">📖 View Dealer Khata</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 1: WHOLESALE BILLING (POS) -->
+        <div id="view-pos" class="view-section">
+            <div class="left-panel">
+                <div class="glass-card">
+                    <div class="card-title"><span>👤 Wholesale Dealer / Party Info</span></div>
+                    <div class="input-row">
+                        <input type="text" id="custName" class="input-field" placeholder="Dealer / Shop Name (e.g. Al-Madina Mobiles)">
+                        <input type="text" id="custPhone" class="input-field" placeholder="Phone / WhatsApp Number">
+                    </div>
+                    <div class="input-row">
+                        <select id="dealType" class="input-field">
+                            <option value="Whole Sale">📦 Whole Sale Supply</option>
+                            <option value="Dealer Commission">🤝 Commission / Deal</option>
+                            <option value="Bulk Order">⚡ Bulk Order</option>
+                        </select>
+                        <input type="text" id="itemImei" class="input-field" placeholder="Batch / IMEI Notes (Optional)">
+                    </div>
+                </div>
+
+                <div class="glass-card" style="flex: 1; display: flex; flex-direction: column;">
+                    <div class="card-title"><span>🔍 Search Items for Wholesale Bill</span></div>
+                    
+                    <div class="search-results-box">
+                        <input type="text" id="itemSearchBox" class="input-field" placeholder="Yahan type karein (e.g. iPhone 13, Battery, Accessories)..." oninput="filterItems(this.value)" autocomplete="off" style="width: 100%;">
+                        <div id="suggestionsList" class="suggestions-list"></div>
+                    </div>
+                    
+                    <p style="color: var(--text-muted); font-size: 12px; margin-top: 10px;">
+                        💡 Tip: Item search karke select karein, uske baad cart mein quantity aur wholesale rate set karein.
+                    </p>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="card-title"><span>🛒 Wholesale Bill Cart</span></div>
+                <div style="flex: 1; overflow-y: auto;">
+                    <table class="styled-table">
+                        <thead>
+                            <tr><th>Item</th><th>Qty</th><th>Rate (Rs)</th><th>Total</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="cartItems"></tbody>
+                    </table>
+                </div>
+
+                <div class="input-row" style="margin-top: 10px;">
+                    <input type="number" id="cashPaid" class="input-field" placeholder="Cash Received (Rs)" oninput="calculateDue()">
+                </div>
+
+                <div class="total-box">
+                    <div class="total-row"><span>Total Bill Amount:</span> <span id="grandTotal" style="color: var(--text-main);">Rs. 0</span></div>
+                    <div class="total-row"><span>Cash Paid:</span> <span id="displayPaid" style="color: var(--accent);">Rs. 0</span></div>
+                    <div class="total-row" style="font-size: 16px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 4px;">
+                        <span>Remaining Udhar:</span> <span id="displayDue" style="color: var(--danger);">Rs. 0</span>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn" onclick="completeSale()">Save Wholesale Bill</button>
+                    <button class="btn btn-whatsapp" onclick="sendWhatsApp()">📲 WhatsApp Bill</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: STOCK & SUPPLIERS -->
+        <div id="view-stock" class="view-section" style="flex-direction: column; overflow-y: auto; gap: 15px;">
+            <div class="glass-card">
+                <div class="card-title"><span>📦 Add New Stock & Supplier</span></div>
+                <div class="input-row">
+                    <input type="text" id="stockName" class="input-field" placeholder="Model / Item Name">
+                    <input type="text" id="stockImei" class="input-field" placeholder="IMEI / Batch No">
+                </div>
+                <div class="input-row">
+                    <input type="number" id="stockCost" class="input-field" placeholder="Purchase Cost Price (Rs)">
+                    <input type="text" id="supplierName" class="input-field" placeholder="Supplier / Market Dealer Name">
+                    <input type="text" id="supplierPhone" class="input-field" placeholder="Supplier Phone Number">
+                </div>
+                <button class="btn" style="margin-top: 10px;" onclick="saveStock()">Save Stock Item</button>
+            </div>
+
+            <div class="glass-card" style="flex: 1;">
+                <div class="card-title"><span>📋 Available Stock & Supplier Details</span></div>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Item / Model</th>
+                            <th>IMEI / Batch</th>
+                            <th>Cost</th>
+                            <th>Supplier Name</th>
+                            <th>Phone</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW 3: WHOLESALE DEALER KHATA -->
+        <div id="view-ledger" class="view-section" style="flex-direction: column; overflow-y: auto; gap: 15px;">
+            <div class="glass-card">
+                <div class="card-title">
+                    <span>📖 Wholesale Dealer Khata (Complete Ledger)</span>
+                    <span style="font-size: 12px; color: var(--accent);">Party wise market accounts</span>
+                </div>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Dealer / Party Name</th>
+                            <th>Phone Number</th>
+                            <th>Deal Type</th>
+                            <th>Items & Details</th>
+                            <th>Total Amount</th>
+                            <th>Paid</th>
+                            <th>Udhar</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledgerTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW 4: BACKUP & SETTINGS -->
+        <div id="view-backup" class="view-section" style="flex-direction: column; gap: 20px;">
+            <div class="glass-card">
+                <div class="card-title"><span>💾 Data Backup & Safety (Offline Secure)</span></div>
+                <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 13px;">
+                    Whole sale khata aur stock ka saara data secure backup file ke tor par download kar lein.
+                </p>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn" onclick="downloadBackup()">📥 Download Backup File</button>
+                    <button class="btn btn-warning" onclick="document.getElementById('restoreFile').click()">📤 Restore Backup</button>
+                    <input type="file" id="restoreFile" style="display:none" onchange="restoreBackup(event)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('nk_wholesale_cart')) || [];
+        let stockList = JSON.parse(localStorage.getItem('nk_wholesale_stock')) || [];
+        let customers = JSON.parse(localStorage.getItem('nk_wholesale_customers')) || [];
+
+        const masterItems = [
+            { name: "iPhone 11 Wholesale Lot", cat: "Whole Sale" },
+            { name: "iPhone 12 Pro Wholesale Lot", cat: "Whole Sale" },
+            { name: "iPhone 13 Pro Max Lot", cat: "Whole Sale" },
+            { name: "iPhone 14 / 15 Series", cat: "Whole Sale" },
+            { name: "Samsung Galaxy A Series Box", cat: "Whole Sale" },
+            { name: "Samsung S23 / S24 Ultra", cat: "Whole Sale" },
+            { name: "Mobile Batteries (Bulk)", cat: "Whole Sale" },
+            { name: "LCD Screens (Bulk Lot)", cat: "Whole Sale" },
+            { name: "Fast Chargers & Cables Box", cat: "Whole Sale" }
+        ];
+
+        updateCart();
+        updateDashboard();
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+            document.querySelectorAll('.nav-menu li').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('view-' + viewName).classList.add('active-view');
+            document.getElementById('menu-' + viewName).classList.add('active');
+
+            if(viewName === 'home') updateDashboard();
+            if(viewName === 'ledger') renderLedger();
+            if(viewName === 'stock') renderStock();
+        }
+
+        function filterItems(query) {
+            let listDiv = document.getElementById('suggestionsList');
+            listDiv.innerHTML = '';
+            if(!query.trim()) {
+                listDiv.style.display = 'none';
+                return;
+            }
+
+            let filtered = masterItems.filter(i => i.name.toLowerCase().includes(query.toLowerCase()));
+            if(filtered.length === 0) {
+                listDiv.style.display = 'none';
+                return;
+            }
+
+            filtered.forEach(item => {
+                listDiv.innerHTML += `<div class="suggestion-item" onclick="selectSearchItem('${item.name}')">
+                    <span>${item.name}</span>
+                    <span style="color:var(--accent);">Select</span>
+                </div>`;
+            });
+            listDiv.style.display = 'block';
+        }
+
+        function selectSearchItem(name) {
+            document.getElementById('suggestionsList').style.display = 'none';
+            document.getElementById('itemSearchBox').value = '';
+
+            let priceInput = prompt(`Enter Wholesale Rate (Rs) for ${name}:`, "0");
+            if(priceInput === null) return;
+            let price = parseFloat(priceInput) || 0;
+
+            let cartItem = cart.find(p => p.name === name && p.price === price);
+            if(cartItem) {
+                cartItem.qty++;
+            } else {
+                cart.push({name, price, qty: 1});
+            }
+            saveAndRenderCart();
+        }
+
+        function updateItemQty(index, newQty) {
+            let val = parseInt(newQty);
+            if(!isNaN(val) && val > 0) {
+                cart[index].qty = val;
+                saveAndRenderCart();
+            }
+        }
+
+        function updateItemPrice(index, newPrice) {
+            let val = parseFloat(newPrice);
+            if(!isNaN(val)) {
+                cart[index].price = val;
+                saveAndRenderCart();
+            }
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveAndRenderCart();
+        }
+
+        function updateCart() {
+            let tbody = document.getElementById('cartItems');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                let sub = item.price * item.qty;
+                total += sub;
+                tbody.innerHTML += `<tr>
+                    <td><b>${item.name}</b></td>
+                    <td><input type="number" class="input-field" style="padding: 4px 8px; width: 60px;" value="${item.qty}" oninput="updateItemQty(${index}, this.value)"></td>
+                    <td><input type="number" class="input-field" style="padding: 4px 8px; width: 85px;" value="${item.price}" oninput="updateItemPrice(${index}, this.value)"></td>
+                    <td>Rs. ${sub.toLocaleString()}</td>
+                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="removeFromCart(${index})">X</button></td>
+                </tr>`;
+            });
+
+            document.getElementById('grandTotal').innerText = 'Rs. ' + total.toLocaleString();
+            calculateDue();
+        }
+
+        function calculateDue() {
+            let total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let paid = parseFloat(document.getElementById('cashPaid').value) || 0;
+            let due = total - paid;
+
+            document.getElementById('displayPaid').innerText = 'Rs. ' + paid.toLocaleString();
+            document.getElementById('displayDue').innerText = 'Rs. ' + (due > 0 ? due.toLocaleString() : 0);
+        }
+
+        function saveAndRenderCart() {
+            localStorage.setItem('nk_wholesale_cart', JSON.stringify(cart));
+            updateCart();
+        }
+
+        function completeSale() {
+            let name = document.getElementById('custName').value.trim();
+            let phone = document.getElementById('custPhone').value.trim();
+            let dealType = document.getElementById('dealType').value;
+            let total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let paid = parseFloat(document.getElementById('cashPaid').value) || 0;
+            
+            if(cart.length === 0) { alert('Cart is empty!'); return; }
+            if(!name) { alert('Please enter Dealer / Party Name!'); return; }
+            if(!phone) { alert('Please enter Phone Number!'); return; }
+
+            let due = total - paid;
+            if(due < 0) due = 0;
+
+            let itemsList = cart.map(i => `${i.name} (Qty: ${i.qty} @ ${i.price})`).join(', ');
+            let currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            customers.unshift({
+                date: currentDate,
+                name,
+                phone,
+                dealType,
+                items: itemsList,
+                totalPurchases: total,
+                totalPaid: paid,
+                balanceDue: due
+            });
+
+            localStorage.setItem('nk_wholesale_customers', JSON.stringify(customers));
+            alert(`Wholesale Bill Saved for ${name}!\nTotal: Rs. ${total}\nPaid: Rs. ${paid}\nUdhar: Rs. ${due}`);
+
+            cart = [];
+            localStorage.removeItem('nk_wholesale_cart');
+            document.getElementById('custName').value = '';
+            document.getElementById('custPhone').value = '';
+            document.getElementById('cashPaid').value = '';
+            updateCart();
+        }
+
+        function saveStock() {
+            let name = document.getElementById('stockName').value.trim();
+            let imei = document.getElementById('stockImei').value.trim();
+            let cost = parseFloat(document.getElementById('stockCost').value) || 0;
+            let supName = document.getElementById('supplierName').value.trim();
+            let supPhone = document.getElementById('supplierPhone').value.trim();
+
+            if(!name || !supName) { alert('Please enter Item Name and Supplier Name!'); return; }
+
+            stockList.push({name, imei: imei || 'N/A', cost, supName, supPhone: supPhone || 'N/A'});
+            localStorage.setItem('nk_wholesale_stock', JSON.stringify(stockList));
+
+            document.getElementById('stockName').value = '';
+            document.getElementById('stockImei').value = '';
+            document.getElementById('stockCost').value = '';
+            document.getElementById('supplierName').value = '';
+            document.getElementById('supplierPhone').value = '';
+            renderStock();
+            alert('Stock and supplier details saved successfully!');
+        }
+
+        function renderStock() {
+            let tbody = document.getElementById('stockTable');
+            tbody.innerHTML = '';
+            if(stockList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No stock items added yet.</td></tr>`;
+                return;
+            }
+            stockList.forEach((s, index) => {
+                tbody.innerHTML += `<tr>
+                    <td><b>${s.name}</b></td>
+                    <td>${s.imei}</td>
+                    <td>Rs. ${s.cost.toLocaleString()}</td>
+                    <td>${s.supName}</td>
+                    <td>${s.supPhone}</td>
+                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="deleteStock(${index})">Delete</button></td>
+                </tr>`;
+            });
+        }
+
+        function deleteStock(index) {
+            stockList.splice(index, 1);
+            localStorage.setItem('nk_wholesale_stock', JSON.stringify(stockList));
+            renderStock();
+        }
+
+        function renderLedger() {
+            let tbody = document.getElementById('ledgerTable');
+            tbody.innerHTML = '';
+            if(customers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No wholesale dealer records found yet.</td></tr>`;
+                return;
+            }
+            customers.forEach((c, index) => {
+                tbody.innerHTML += `<tr>
+                    <td>${c.date || 'N/A'}</td>
+                    <td><b>${c.name}</b></td>
+                    <td>${c.phone}</td>
+                    <td><span style="font-size:11px; background:rgba(99,102,241,0.2); padding:3px 6px; border-radius:4px; color:var(--primary);">${c.dealType}</span></td>
+                    <td>${c.items}</td>
+                    <td>Rs. ${c.totalPurchases.toLocaleString()}</td>
+                    <td style="color: var(--accent);">Rs. ${c.totalPaid.toLocaleString()}</td>
+                    <td style="color: var(--danger);">Rs. ${c.balanceDue.toLocaleString()}</td>
+                    <td>
+                        <button class="btn btn-warning" style="padding: 4px 8px; font-size: 11px;" onclick="clearDue(${index})">Clear</button>
+                        <button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="deleteCust(${index})">Del</button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        function clearDue(index) {
+            let amount = prompt("Enter payment received from dealer:");
+            if(amount) {
+                let pay = parseFloat(amount) || 0;
+                customers[index].balanceDue -= pay;
+                customers[index].totalPaid += pay;
+                if(customers[index].balanceDue < 0) customers[index].balanceDue = 0;
+                localStorage.setItem('nk_wholesale_customers', JSON.stringify(customers));
+                renderLedger();
+                alert('Dealer ledger updated successfully!');
+            }
+        }
+
+        function deleteCust(index) {
+            customers.splice(index, 1);
+            localStorage.setItem('nk_wholesale_customers', JSON.stringify(customers));
+            renderLedger();
+        }
+
+        function updateDashboard() {
+            document.getElementById('dashStockCount').innerText = stockList.length;
+            document.getElementById('dashCustCount').innerText = customers.length;
+            let totalUdhar = customers.reduce((sum, c) => sum + c.balanceDue, 0);
+            document.getElementById('dashUdharTotal').innerText = 'Rs. ' + totalUdhar.toLocaleString();
+        }
+
+        function sendWhatsApp() {
+            let phone = document.getElementById('custPhone').value;
+            let name = document.getElementById('custName').value || 'Dealer';
+            let total = document.getElementById('grandTotal').innerText;
+            let due = document.getElementById('displayDue').innerText;
+            if(!phone) { alert('Please enter WhatsApp number!'); return; }
+            let msg = `Hello ${name}, wholesale bill from NK MOBILE SHOP. Total Amount: ${total}. Remaining Balance: ${due}.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function downloadBackup() {
+            let data = { cart, stockList, customers };
+            let blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            let a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'nk_wholesale_khata_backup_' + new Date().toISOString().slice(0,10) + '.json';
+            a.click();
+        }
+
+        function restoreBackup(event) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let data = JSON.parse(e.target.result);
+                    if(data.customers && data.stockList) {
+                        localStorage.setItem('nk_wholesale_customers', JSON.stringify(data.customers));
+                        localStorage.setItem('nk_wholesale_stock', JSON.stringify(data.stockList));
+                        customers = data.customers;
+                        stockList = data.stockList;
+                        alert('Backup restored successfully!');
+                        updateDashboard();
+                    }
+                } catch(err) {
+                    alert('Invalid backup file!');
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
