@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NK Mobile Shop - Premium POS & Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0071e3;
+            --success: #34c759;
+            --danger: #ff3b30;
+            --warning: #ff9500;
+            --bg: #f5f5f7;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text: #1d1d1f;
+            --border: #d2d2d7;
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 5px;
+            border-radius: 12px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #515154;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .nav-btn.active {
+            background: #fff;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            width: 100%;
+            flex: 1;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #515154;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: #fff;
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        }
+
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-success { background: var(--success); box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 13px;
+            border-bottom: 1px solid #eee;
+        }
+
+        th { background: #fafafa; font-weight: 600; color: #515154; }
+        tr:last-child td { border-bottom: none; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-cash { background: #e8f8ed; color: var(--success); }
+        .badge-credit { background: #fff4e5; color: var(--warning); }
+
+        .summary-box {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-card h3 { font-size: 12px; color: #86868b; margin-bottom: 5px; }
+        .stat-card p { font-size: 17px; font-weight: 700; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>NK MOBILE SHOP</h1>
+        <div class="nav-tabs">
+            <button class="nav-btn active" onclick="switchTab('pos')">POS Billing</button>
+            <button class="nav-btn" onclick="switchTab('inventory')">Stock & Purchases</button>
+            <button class="nav-btn" onclick="switchTab('ledger')">Customer Ledger</button>
+            <button class="nav-btn" onclick="switchTab('repair')">Repair & Software</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <!-- TAB 1: POS BILLING -->
+        <div id="tab-pos" class="tab-content active">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>New Sale / Invoice</h2>
+                    <form id="pos-form">
+                        <div class="form-group">
+                            <label>Customer Name</label>
+                            <input type="text" id="pos-cust" placeholder="Enter customer name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Item / Model</label>
+                            <input type="text" id="pos-item" placeholder="e.g. iPhone 13 Pro" required>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Sale Price (Rs.)</label>
+                                <input type="number" id="pos-price" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Discount (Rs.)</label>
+                                <input type="number" id="pos-disc" value="0">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Complete Sale & Print</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2>Recent Sales History</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Item</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pos-table-body">
+                            <tr><td colspan="3" style="text-align: center; color: #86868b;">No sales recorded</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: INVENTORY & STOCK -->
+        <div id="tab-inventory" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>Add Stock & Purchase Detail</h2>
+                    <form id="stock-form">
+                        <div class="form-group">
+                            <label>Item / Model Name</label>
+                            <input type="text" id="st-name" placeholder="e.g. Samsung S22 / iPhone 14" required>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Total Cost (Rs.)</label>
+                                <input type="number" id="st-price" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Purchase Type</label>
+                                <select id="st-type">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Credit">Credit (Udhar)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Paid Amount (Rs.)</label>
+                                <input type="number" id="st-paid" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Remaining Balance (Rs.)</label>
+                                <input type="number" id="st-rem" readonly style="background: #f9f9fb;">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">Save Stock Record</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2>Inventory & Credit Status</h2>
+                    <div class="summary-box">
+                        <div class="stat-card"><h3>Total Asset</h3><p id="st-tot-val">0</p></div>
+                        <div class="stat-card"><h3>Total Paid</h3><p id="st-tot-paid" style="color:var(--success);">0</p></div>
+                        <div class="stat-card"><h3>Remaining Udhar</h3><p id="st-tot-rem" style="color:var(--danger);">0</p></div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Cost</th>
+                                <th>Type</th>
+                                <th>Paid</th>
+                                <th>Remaining</th>
+                            </tr>
+                        </thead>
+                        <tbody id="st-table-body">
+                            <tr><td colspan="5" style="text-align: center; color: #86868b;">No stock recorded</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: CUSTOMER LEDGER -->
+        <div id="tab-ledger" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>Add Customer Udhar / Ledger</h2>
+                    <form id="ledger-form">
+                        <div class="form-group">
+                            <label>Customer Name</label>
+                            <input type="text" id="led-name" placeholder="Customer name" required>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Total Udhar (Rs.)</label>
+                                <input type="number" id="led-total" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount Received (Rs.)</label>
+                                <input type="number" id="led-rec" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">Save Ledger Entry</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2>Customer Accounts & Balances</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Total Udhar</th>
+                                <th>Received</th>
+                                <th>Balance Due</th>
+                            </tr>
+                        </thead>
+                        <tbody id="led-table-body">
+                            <tr><td colspan="4" style="text-align: center; color: #86868b;">No ledger records</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: REPAIR & SOFTWARE WORK -->
+        <div id="tab-repair" class="tab-content">
+            <div class="grid-2">
+                <div class="card">
+                    <h2>Add Repair / Software Job</h2>
+                    <form id="repair-form">
+                        <div class="form-group">
+                            <label>Customer Name</label>
+                            <input type="text" id="rep-cust" placeholder="Customer name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Device & Issue</label>
+                            <input type="text" id="rep-device" placeholder="e.g. iPhone 11 - Display change / IMEI unlock" required>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Service Charges (Rs.)</label>
+                                <input type="number" id="rep-cost" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Job Status</label>
+                                <select id="rep-status">
+                                    <option value="Pending">Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">Save Repair Job</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h2>Repair & Software Jobs List</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Device / Issue</th>
+                                <th>Charges</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rep-table-body">
+                            <tr><td colspan="4" style="text-align: center; color: #86868b;">No repair jobs</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // --- STOCK CALCULATOR ---
+        const stPrice = document.getElementById('st-price');
+        const stPaid = document.getElementById('st-paid');
+        const stRem = document.getElementById('st-rem');
+        stPrice.addEventListener('input', calcSt);
+        stPaid.addEventListener('input', calcSt);
+        function calcSt() {
+            let p = parseFloat(stPrice.value) || 0;
+            let d = parseFloat(stPaid.value) || 0;
+            stRem.value = (p - d >= 0) ? (p - d) : 0;
+        }
+
+        // --- STORAGE & RENDERING ---
+        // 1. POS Sales
+        let salesList = JSON.parse(localStorage.getItem('nk_sales')) || [];
+        document.getElementById('pos-form').addEventListener('submit', e => {
+            e.preventDefault();
+            salesList.push({
+                cust: document.getElementById('pos-cust').value,
+                item: document.getElementById('pos-item').value,
+                total: parseFloat(document.getElementById('pos-price').value) - parseFloat(document.getElementById('pos-disc').value || 0)
+            });
+            localStorage.setItem('nk_sales', JSON.stringify(salesList));
+            renderSales();
+            e.target.reset();
+        });
+        function renderSales() {
+            let tb = document.getElementById('pos-table-body');
+            tb.innerHTML = salesList.length === 0 ? `<tr><td colspan="3" style="text-align: center; color: #86868b;">No sales recorded</td></tr>` : '';
+            salesList.forEach(s => {
+                tb.innerHTML += `<tr><td><strong>${s.cust}</strong></td><td>${s.item}</td><td>Rs. ${s.total.toLocaleString()}</td></tr>`;
+            });
+        }
+        renderSales();
+
+        // 2. Inventory
+        let stockList = JSON.parse(localStorage.getItem('nk_stock')) || [];
+        document.getElementById('stock-form').addEventListener('submit', e => {
+            e.preventDefault();
+            stockList.push({
+                name: document.getElementById('st-name').value,
+                price: parseFloat(stPrice.value),
+                type: document.getElementById('st-type').value,
+                paid: parseFloat(stPaid.value),
+                rem: parseFloat(stRem.value)
+            });
+            localStorage.setItem('nk_stock', JSON.stringify(stockList));
+            renderStock();
+            e.target.reset();
+            stRem.value = '';
+        });
+        function renderStock() {
+            let tb = document.getElementById('st-table-body');
+            tb.innerHTML = stockList.length === 0 ? `<tr><td colspan="5" style="text-align: center; color: #86868b;">No stock recorded</td></tr>` : '';
+            let tv=0, tp=0, tr=0;
+            stockList.forEach(st => {
+                tv += st.price; tp += st.paid; tr += st.rem;
+                tb.innerHTML += `<tr><td><strong>${st.name}</strong></td><td>Rs. ${st.price.toLocaleString()}</td><td><span class="badge ${st.type==='Cash'?'badge-cash':'badge-credit'}">${st.type}</span></td><td>Rs. ${st.paid.toLocaleString()}</td><td style="color:${st.rem>0?'var(--danger)':'inherit'}">Rs. ${st.rem.toLocaleString()}</td></tr>`;
+            });
+            document.getElementById('st-tot-val').innerText = 'Rs. ' + tv.toLocaleString();
+            document.getElementById('st-tot-paid').innerText = 'Rs. ' + tp.toLocaleString();
+            document.getElementById('st-tot-rem').innerText = 'Rs. ' + tr.toLocaleString();
+        }
+        renderStock();
+
+        // 3. Ledger
+        let ledgerList = JSON.parse(localStorage.getItem('nk_ledger')) || [];
+        document.getElementById('ledger-form').addEventListener('submit', e => {
+            e.preventDefault();
+            let tot = parseFloat(document.getElementById('led-total').value);
+            let rec = parseFloat(document.getElementById('led-rec').value);
+            ledgerList.push({
+                name: document.getElementById('led-name').value,
+                total: tot,
+                rec: rec,
+                due: tot - rec
+            });
+            localStorage.setItem('nk_ledger', JSON.stringify(ledgerList));
+            renderLedger();
+            e.target.reset();
+        });
+        function renderLedger() {
+            let tb = document.getElementById('led-table-body');
+            tb.innerHTML = ledgerList.length === 0 ? `<tr><td colspan="4" style="text-align: center; color: #86868b;">No ledger records</td></tr>` : '';
+            ledgerList.forEach(l => {
+                tb.innerHTML += `<tr><td><strong>${l.name}</strong></td><td>Rs. ${l.total.toLocaleString()}</td><td>Rs. ${l.rec.toLocaleString()}</td><td style="color:var(--danger)">Rs. ${l.due.toLocaleString()}</td></tr>`;
+            });
+        }
+        renderLedger();
+
+        // 4. Repair & Software
+        let repairList = JSON.parse(localStorage.getItem('nk_repair')) || [];
+        document.getElementById('repair-form').addEventListener('submit', e => {
+            e.preventDefault();
+            repairList.push({
+                cust: document.getElementById('rep-cust').value,
+                device: document.getElementById('rep-device').value,
+                cost: parseFloat(document.getElementById('rep-cost').value),
+                status: document.getElementById('rep-status').value
+            });
+            localStorage.setItem('nk_repair', JSON.stringify(repairList));
+            renderRepair();
+            e.target.reset();
+        });
+        function renderRepair() {
+            let tb = document.getElementById('rep-table-body');
+            tb.innerHTML = repairList.length === 0 ? `<tr><td colspan="4" style="text-align: center; color: #86868b;">No repair jobs</td></tr>` : '';
+            repairList.forEach(r => {
+                let badgeClass = r.status === 'Completed' ? 'badge-cash' : 'badge-credit';
+                tb.innerHTML += `<tr><td><strong>${r.cust}</strong></td><td>${r.device}</td><td>Rs. ${r.cost.toLocaleString()}</td><td><span class="badge ${badgeClass}">${r.status}</span></td></tr>`;
+            });
+        }
+        renderRepair();
+    </script>
+</body>
+</html>
