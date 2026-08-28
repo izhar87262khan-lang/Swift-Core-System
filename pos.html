@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NK MOBILE SHOP - Advanced Management System</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%); }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.08); display: flex; flex-direction: column; }
+        .logo { padding: 25px 20px; font-size: 19px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); letter-spacing: 0.5px; }
+        .nav-menu { list-style: none; padding: 20px 15px; display: flex; flex-direction: column; gap: 8px; }
+        .nav-menu li a { display: flex; align-items: center; gap: 12px; padding: 13px 16px; color: var(--text-muted); text-decoration: none; border-radius: 12px; font-weight: 500; transition: 0.3s; cursor: pointer; font-size: 14px; }
+        .nav-menu li.active a, .nav-menu li a:hover { background: var(--primary); color: #fff; box-shadow: 0 0 20px var(--primary-glow); }
+
+        /* Main Workspace */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        header { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(10px); padding: 15px 30px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center; }
+        .shop-badge { font-size: 17px; font-weight: 700; color: var(--text-main); letter-spacing: 0.5px; }
+        .offline-status { background: rgba(16, 185, 129, 0.15); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+        /* Views */
+        .view-section { display: none; flex: 1; overflow: hidden; padding: 20px; gap: 20px; }
+        .view-section.active-view { display: flex; }
+
+        /* POS & Layouts */
+        .left-panel { flex: 2; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 5px; }
+        .right-panel { flex: 1.3; background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; display: flex; flex-direction: column; padding: 20px; }
+
+        /* Glass Cards */
+        .glass-card { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px; }
+        .card-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Inputs & Controls */
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .input-field, select.input-field { flex: 1; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); padding: 11px 14px; border-radius: 10px; color: #fff; outline: none; transition: 0.3s; font-size: 14px; }
+        .input-field:focus, select.input-field:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+        select.input-field option { background: #0f172a; color: #fff; }
+
+        /* Tables */
+        .styled-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+        .styled-table th, .styled-table td { padding: 11px 8px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; }
+        .styled-table th { color: var(--text-muted); font-weight: 600; }
+
+        /* Action Buttons */
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { flex: 1; background: var(--primary); color: #fff; border: none; padding: 13px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.3s; text-align: center; font-size: 14px; }
+        .btn:hover { opacity: 0.9; box-shadow: 0 0 15px var(--primary-glow); }
+        .btn-whatsapp { background: #25d366; }
+        .btn-whatsapp:hover { box-shadow: 0 0 15px rgba(37, 211, 102, 0.4); }
+        .btn-danger { background: var(--danger); }
+        .btn-warning { background: var(--warning); color: #000; }
+
+        .total-box { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); font-size: 14px; font-weight: 600; }
+        .total-row { display: flex; justify-content: space-between; }
+        .footer-credit { font-size: 11px; color: var(--text-muted); text-align: center; padding: 10px; border-top: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+
+    <!-- Datalist for Auto-complete Customer Name & Phone -->
+    <datalist id="customerListOptions"></datalist>
+    <datalist id="stockListOptions"></datalist>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">📱 NK MOBILE SHOP</div>
+        <ul class="nav-menu">
+            <li id="menu-home" class="active"><a onclick="switchView('home')">🏠 Home Dashboard</a></li>
+            <li id="menu-pos"><a onclick="switchView('pos')">🛒 Daily Billing (POS)</a></li>
+            <li id="menu-wholesale"><a onclick="switchView('wholesale')">📦 Wholesale Billing</a></li>
+            <li id="menu-ledger"><a onclick="switchView('ledger')">📖 Customer / Dealer Khata</a></li>
+            <li id="menu-stock"><a onclick="switchView('stock')">📦 Stock Inventory</a></li>
+            <li id="menu-expenses"><a onclick="switchView('expenses')">💸 Shop Expenses Tracker</a></li>
+            <li id="menu-backup"><a onclick="switchView('backup')">💾 Backup & Settings</a></li>
+        </ul>
+        <div class="footer-credit">Hazarganji Quetta</div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="main">
+        <header>
+            <div class="shop-badge">NK MOBILE SHOP - Management System</div>
+            <div class="offline-status">🟢 Offline Ready</div>
+        </header>
+
+        <!-- VIEW 0: HOME DASHBOARD -->
+        <div id="view-home" class="view-section active-view" style="flex-direction: column; overflow-y: auto; gap: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">Total Stock Items</h3>
+                    <p id="dashStockCount" style="font-size: 24px; font-weight: bold; color: var(--primary);">0</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">Total Customers / Dealers</h3>
+                    <p id="dashCustCount" style="font-size: 24px; font-weight: bold; color: var(--accent);">0</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">Total Market Udhar</h3>
+                    <p id="dashUdharTotal" style="font-size: 24px; font-weight: bold; color: var(--danger);">Rs. 0</p>
+                </div>
+                <div class="glass-card" style="text-align: center;">
+                    <h3 style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">Total Shop Expenses</h3>
+                    <p id="dashExpenseTotal" style="font-size: 24px; font-weight: bold; color: var(--warning);">Rs. 0</p>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-title"><span>⚡ Quick Actions</span></div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn" onclick="switchView('pos')">🛒 Daily Bill (POS)</button>
+                    <button class="btn btn-warning" onclick="switchView('wholesale')">📦 Wholesale Bill</button>
+                    <button class="btn btn-whatsapp" onclick="switchView('ledger')">📖 View Khata Folders</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 1: DAILY BILLING (POS) -->
+        <div id="view-pos" class="view-section">
+            <div class="left-panel">
+                <div class="glass-card">
+                    <div class="card-title"><span>👤 Customer Details (Auto-Fills Phone)</span></div>
+                    <div class="input-row">
+                        <input type="text" id="posCustName" class="input-field" list="customerListOptions" placeholder="Customer Name (Select or Type)" oninput="autoFillPhone('pos')">
+                        <input type="text" id="posCustPhone" class="input-field" placeholder="Phone Number">
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-title"><span>➕ Add Item from Stock</span></div>
+                    <div class="input-row">
+                        <input type="text" id="posItemModel" class="input-field" list="stockListOptions" placeholder="Item / Model Name">
+                        <input type="number" id="posItemQty" class="input-field" placeholder="Quantity" value="1">
+                        <input type="number" id="posItemRate" class="input-field" placeholder="Rate (Rs)">
+                    </div>
+                    <button class="btn" onclick="addPosToCart()" style="margin-top: 5px;">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="card-title"><span>🛒 Daily Bill Cart</span></div>
+                <div style="flex: 1; overflow-y: auto;">
+                    <table class="styled-table">
+                        <thead>
+                            <tr><th>Item / Model</th><th>Qty</th><th>Rate</th><th>Total</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="posCartItems"></tbody>
+                    </table>
+                </div>
+
+                <div class="input-row" style="margin-top: 10px;">
+                    <input type="number" id="posCashPaid" class="input-field" placeholder="Cash Received (Rs)" oninput="calculatePosDue()">
+                </div>
+
+                <div class="total-box">
+                    <div class="total-row"><span>Total Bill:</span> <span id="posGrandTotal" style="color: var(--text-main);">Rs. 0</span></div>
+                    <div class="total-row"><span>Cash Paid:</span> <span id="posDisplayPaid" style="color: var(--accent);">Rs. 0</span></div>
+                    <div class="total-row" style="font-size: 16px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 4px;">
+                        <span>Remaining Udhar:</span> <span id="posDisplayDue" style="color: var(--danger);">Rs. 0</span>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn" onclick="completePosSale()">Save & Deduct Stock</button>
+                    <button class="btn btn-whatsapp" onclick="sendPosWhatsApp()">📲 WhatsApp Bill</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: WHOLESALE BILLING -->
+        <div id="view-wholesale" class="view-section">
+            <div class="left-panel">
+                <div class="glass-card">
+                    <div class="card-title"><span>👤 Wholesale Dealer / Party Info (Auto-Fills Phone)</span></div>
+                    <div class="input-row">
+                        <input type="text" id="wsCustName" class="input-field" list="customerListOptions" placeholder="Dealer / Shop Name" oninput="autoFillPhone('ws')">
+                        <input type="text" id="wsCustPhone" class="input-field" placeholder="Phone / WhatsApp Number">
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-title"><span>➕ Add Item & Purpose</span></div>
+                    <div class="input-row">
+                        <input type="text" id="wsItemModel" class="input-field" list="stockListOptions" placeholder="Mobile Model / Item Name">
+                        <input type="text" id="wsItemPurpose" class="input-field" placeholder="Purpose (e.g. Parts change, Display replacement)">
+                    </div>
+                    <div class="input-row">
+                        <input type="number" id="wsItemQty" class="input-field" placeholder="Quantity" value="1">
+                        <input type="number" id="wsItemRate" class="input-field" placeholder="Per-Piece Rate (Rs)">
+                    </div>
+                    <button class="btn" onclick="addWsToCart()" style="margin-top: 5px;">Add to Wholesale Cart</button>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="card-title"><span>🛒 Wholesale Bill Cart</span></div>
+                <div style="flex: 1; overflow-y: auto;">
+                    <table class="styled-table">
+                        <thead>
+                            <tr><th>Model & Purpose</th><th>Qty</th><th>Rate</th><th>Total</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="wsCartItems"></tbody>
+                    </table>
+                </div>
+
+                <div class="input-row" style="margin-top: 10px;">
+                    <input type="number" id="wsCashPaid" class="input-field" placeholder="Cash Received (Rs)" oninput="calculateWsDue()">
+                </div>
+
+                <div class="total-box">
+                    <div class="total-row"><span>Total Bill Amount:</span> <span id="wsGrandTotal" style="color: var(--text-main);">Rs. 0</span></div>
+                    <div class="total-row"><span>Cash Paid:</span> <span id="wsDisplayPaid" style="color: var(--accent);">Rs. 0</span></div>
+                    <div class="total-row" style="font-size: 16px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 4px;">
+                        <span>Remaining Udhar:</span> <span id="wsDisplayDue" style="color: var(--danger);">Rs. 0</span>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn" onclick="completeWsSale()">Save & Deduct Stock</button>
+                    <button class="btn btn-whatsapp" onclick="sendWsWhatsApp()">📲 WhatsApp Bill</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: CUSTOMER / DEALER KHATA (FOLDERS) -->
+        <div id="view-ledger" class="view-section" style="flex-direction: column; overflow-y: auto; gap: 15px;">
+            <div class="glass-card" id="customerListCard">
+                <div class="card-title">
+                    <span>📖 All Customers & Dealers Khata</span>
+                    <span style="font-size: 12px; color: var(--accent);">Click on any customer to open their folder</span>
+                </div>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Customer / Dealer Name</th>
+                            <th>Phone Number</th>
+                            <th>Total Purchases</th>
+                            <th>Total Paid</th>
+                            <th>Current Balance (Udhar)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledgerTable"></tbody>
+                </table>
+            </div>
+
+            <!-- Individual Customer Folder View (Hidden by default) -->
+            <div class="glass-card" id="customerFolderCard" style="display: none;">
+                <div class="card-title">
+                    <span id="folderTitle">📁 Customer Folder</span>
+                    <button class="btn btn-warning" style="padding: 6px 12px; font-size: 12px; flex: unset;" onclick="closeFolder()">⬅ Back to All Customers</button>
+                </div>
+                
+                <!-- Quick Udhar Payment Box inside Folder -->
+                <div style="background: rgba(15, 23, 42, 0.5); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                    <h4 style="font-size: 13px; color: var(--accent); margin-bottom: 8px;">💵 Receive Payment (Udhar Wapsi)</h4>
+                    <div class="input-row" style="margin-bottom: 0;">
+                        <input type="number" id="receiveAmountInput" class="input-field" placeholder="Enter Amount Received (Rs)">
+                        <button class="btn btn-whatsapp" style="flex: 0.5; padding: 10px;" onclick="receiveUdharPayment()">Receive & Deduct Udhar</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px; font-size: 14px;" id="folderDetails"></div>
+                <h4 style="margin-bottom: 10px; font-size: 14px; color: var(--text-muted);">Transaction History:</h4>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Items & Details</th>
+                            <th>Total Amount</th>
+                            <th>Paid</th>
+                            <th>Udhar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="folderTransactionsTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW 4: STOCK INVENTORY -->
+        <div id="view-stock" class="view-section" style="flex-direction: column; overflow-y: auto; gap: 15px;">
+            <div class="glass-card">
+                <div class="card-title"><span>📦 Add New Stock Item</span></div>
+                <div class="input-row">
+                    <input type="text" id="stockModel" class="input-field" placeholder="Mobile Model / Item Name">
+                    <input type="text" id="stockImei" class="input-field" placeholder="IMEI / Serial No">
+                </div>
+                <div class="input-row">
+                    <input type="number" id="stockCost" class="input-field" placeholder="Purchase Cost Price (Rs)">
+                    <input type="number" id="stockQty" class="input-field" placeholder="Quantity" value="1">
+                </div>
+                <button class="btn" style="margin-top: 10px;" onclick="saveStock()">Save Stock Item</button>
+            </div>
+
+            <div class="glass-card" style="flex: 1;">
+                <div class="card-title"><span>📋 Available Stock Inventory</span></div>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Model / Item</th>
+                            <th>IMEI / Serial</th>
+                            <th>Cost Price</th>
+                            <th>Qty</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW 5: SHOP EXPENSES TRACKER -->
+        <div id="view-expenses" class="view-section" style="flex-direction: column; overflow-y: auto; gap: 15px;">
+            <div class="glass-card">
+                <div class="card-title"><span>💸 Add Shop Expense / Utility</span></div>
+                <div class="input-row">
+                    <input type="text" id="expTitle" class="input-field" placeholder="Expense Title (e.g. Electricity Bill, Tea, Rent)">
+                    <input type="number" id="expAmount" class="input-field" placeholder="Amount (Rs)">
+                </div>
+                <button class="btn btn-warning" style="margin-top: 10px;" onclick="saveExpense()">Record Expense</button>
+            </div>
+
+            <div class="glass-card" style="flex: 1;">
+                <div class="card-title"><span>📋 Expenses Record</span></div>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Expense Title</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenseTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VIEW 6: BACKUP & SETTINGS -->
+        <div id="view-backup" class="view-section" style="flex-direction: column; gap: 20px;">
+            <div class="glass-card">
+                <div class="card-title"><span>💾 Data Backup & Safety (Offline Secure)</span></div>
+                <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 13px;">
+                    Saara data secure backup file ke tor par download kar lein.
+                </p>
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn" onclick="downloadBackup()">📥 Download Backup File</button>
+                    <button class="btn btn-warning" onclick="document.getElementById('restoreFile').click()">📤 Restore Backup</button>
+                    <input type="file" id="restoreFile" style="display:none" onchange="restoreBackup(event)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let posCart = JSON.parse(localStorage.getItem('nk_pos_cart')) || [];
+        let wsCart = JSON.parse(localStorage.getItem('nk_ws_cart')) || [];
+        let stockList = JSON.parse(localStorage.getItem('nk_stock')) || [];
+        let expenseList = JSON.parse(localStorage.getItem('nk_expenses')) || [];
+        let transactions = JSON.parse(localStorage.getItem('nk_transactions')) || [];
+        let currentActiveCustomer = '';
+
+        updatePosCart();
+        updateWsCart();
+        updateDashboard();
+        updateDatalists();
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+            document.querySelectorAll('.nav-menu li').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('view-' + viewName).classList.add('active-view');
+            document.getElementById('menu-' + viewName).classList.add('active');
+
+            if(viewName === 'home') updateDashboard();
+            if(viewName === 'ledger') { closeFolder(); renderLedger(); }
+            if(viewName === 'stock') renderStock();
+            if(viewName === 'expenses') renderExpenses();
+            updateDatalists();
+        }
+
+        function updateDatalists() {
+            let custDatalist = document.getElementById('customerListOptions');
+            custDatalist.innerHTML = '';
+            let customerMap = {};
+            transactions.forEach(t => {
+                if(t.name && !customerMap[t.name]) {
+                    customerMap[t.name] = t.phone;
+                    custDatalist.innerHTML += `<option value="${t.name}">`;
+                }
+            });
+
+            let stockDatalist = document.getElementById('stockListOptions');
+            stockDatalist.innerHTML = '';
+            stockList.forEach(s => {
+                stockDatalist.innerHTML += `<option value="${s.model}">`;
+            });
+        }
+
+        function autoFillPhone(type) {
+            let nameInput = document.getElementById(type === 'pos' ? 'posCustName' : 'wsCustName').value.trim();
+            let phoneInput = document.getElementById(type === 'pos' ? 'posCustPhone' : 'wsCustPhone');
+            
+            let found = transactions.find(t => t.name.toLowerCase() === nameInput.toLowerCase());
+            if(found && found.phone) {
+                phoneInput.value = found.phone;
+            }
+        }
+
+        function deductStockForCart(cart) {
+            cart.forEach(cartItem => {
+                let stockIndex = stockList.findIndex(s => s.model.toLowerCase() === cartItem.model.toLowerCase());
+                if(stockIndex !== -1) {
+                    stockList[stockIndex].qty -= cartItem.qty;
+                    if(stockList[stockIndex].qty < 0) stockList[stockIndex].qty = 0;
+                }
+            });
+            localStorage.setItem('nk_stock', JSON.stringify(stockList));
+        }
+
+        // --- POS CART LOGIC ---
+        function addPosToCart() {
+            let model = document.getElementById('posItemModel').value.trim();
+            let qty = parseInt(document.getElementById('posItemQty').value) || 1;
+            let rate = parseFloat(document.getElementById('posItemRate').value) || 0;
+
+            if(!model) { alert('Please enter Item Model!'); return; }
+            posCart.push({ model, qty, rate });
+            saveAndRenderPosCart();
+
+            document.getElementById('posItemModel').value = '';
+            document.getElementById('posItemQty').value = '1';
+            document.getElementById('posItemRate').value = '';
+        }
+
+        function removePosFromCart(index) {
+            posCart.splice(index, 1);
+            saveAndRenderPosCart();
+        }
+
+        function updatePosCart() {
+            let tbody = document.getElementById('posCartItems');
+            tbody.innerHTML = '';
+            let total = 0;
+            posCart.forEach((item, index) => {
+                let sub = item.rate * item.qty;
+                total += sub;
+                tbody.innerHTML += `<tr>
+                    <td><b>${item.model}</b></td>
+                    <td>${item.qty}</td>
+                    <td>Rs. ${item.rate.toLocaleString()}</td>
+                    <td>Rs. ${sub.toLocaleString()}</td>
+                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="removePosFromCart(${index})">X</button></td>
+                </tr>`;
+            });
+            document.getElementById('posGrandTotal').innerText = 'Rs. ' + total.toLocaleString();
+            calculatePosDue();
+        }
+
+        function calculatePosDue() {
+            let total = posCart.reduce((sum, item) => sum + (item.rate * item.qty), 0);
+            let paid = parseFloat(document.getElementById('posCashPaid').value) || 0;
+            let due = total - paid;
+            document.getElementById('posDisplayPaid').innerText = 'Rs. ' + paid.toLocaleString();
+            document.getElementById('posDisplayDue').innerText = 'Rs. ' + (due > 0 ? due.toLocaleString() : 0);
+        }
+
+        function saveAndRenderPosCart() {
+            localStorage.setItem('nk_pos_cart', JSON.stringify(posCart));
+            updatePosCart();
+        }
+
+        function completePosSale() {
+            let name = document.getElementById('posCustName').value.trim() || 'Cash Customer';
+            let phone = document.getElementById('posCustPhone').value.trim() || 'N/A';
+            let total = posCart.reduce((sum, item) => sum + (item.rate * item.qty), 0);
+            let paid = parseFloat(document.getElementById('posCashPaid').value) || 0;
+            if(posCart.length === 0) { alert('Cart is empty!'); return; }
+
+            let due = total - paid;
+            if(due < 0) due = 0;
+
+            let itemsList = posCart.map(i => `${i.model} (Qty: ${i.qty} @ ${i.rate})`).join(', ');
+            let currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            deductStockForCart(posCart);
+
+            transactions.unshift({ date: currentDate, type: 'Daily Sale (POS)', name, phone, items: itemsList, total, paid, due });
+            localStorage.setItem('nk_transactions', JSON.stringify(transactions));
+            alert(`Daily Sale Saved & Stock Updated!\nTotal: Rs. ${total}\nPaid: Rs. ${paid}\nUdhar: Rs. ${due}`);
+
+            posCart = [];
+            localStorage.removeItem('nk_pos_cart');
+            document.getElementById('posCustName').value = '';
+            document.getElementById('posCustPhone').value = '';
+            document.getElementById('posCashPaid').value = '';
+            updatePosCart();
+            updateDatalists();
+        }
+
+        function sendPosWhatsApp() {
+            let phone = document.getElementById('posCustPhone').value;
+            let name = document.getElementById('posCustName').value || 'Customer';
+            let total = document.getElementById('posGrandTotal').innerText;
+            if(!phone) { alert('Please enter phone number!'); return; }
+            let msg = `Hello ${name}, your bill from NK MOBILE SHOP. Total: ${total}.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // --- WHOLESALE CART LOGIC ---
+        function addWsToCart() {
+            let model = document.getElementById('wsItemModel').value.trim();
+            let purpose = document.getElementById('wsItemPurpose').value.trim();
+            let qty = parseInt(document.getElementById('wsItemQty').value) || 1;
+            let rate = parseFloat(document.getElementById('wsItemRate').value) || 0;
+
+            if(!model) { alert('Please enter Model Name!'); return; }
+            if(!purpose) { alert('Please enter Purpose!'); return; }
+
+            wsCart.push({ model, purpose, qty, rate });
+            saveAndRenderWsCart();
+
+            document.getElementById('wsItemModel').value = '';
+            document.getElementById('wsItemPurpose').value = '';
+            document.getElementById('wsItemQty').value = '1';
+            document.getElementById('wsItemRate').value = '';
+        }
+
+        function removeWsFromCart(index) {
+            wsCart.splice(index, 1);
+            saveAndRenderWsCart();
+        }
+
+        function updateWsCart() {
+            let tbody = document.getElementById('wsCartItems');
+            tbody.innerHTML = '';
+            let total = 0;
+            wsCart.forEach((item, index) => {
+                let sub = item.rate * item.qty;
+                total += sub;
+                tbody.innerHTML += `<tr>
+                    <td><b>${item.model}</b><br><span style="font-size: 11px; color: var(--accent);">Purpose: ${item.purpose}</span></td>
+                    <td>${item.qty}</td>
+                    <td>Rs. ${item.rate.toLocaleString()}</td>
+                    <td>Rs. ${sub.toLocaleString()}</td>
+                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="removeWsFromCart(${index})">X</button></td>
+                </tr>`;
+            });
+            document.getElementById('wsGrandTotal').innerText = 'Rs. ' + total.toLocaleString();
+            calculateWsDue();
+        }
+
+        function calculateWsDue() {
+            let total = wsCart.reduce((sum, item) => sum + (item.rate * item.qty), 0);
+            let paid = parseFloat(document.getElementById('wsCashPaid').value) || 0;
+            let due = total - paid;
+            document.getElementById('wsDisplayPaid').innerText = 'Rs. ' + paid.toLocaleString();
+            document.getElementById('wsDisplayDue').innerText = 'Rs. ' + (due > 0 ? due.toLocaleString() : 0);
+        }
+
+        function saveAndRenderWsCart() {
+            localStorage.setItem('nk_ws_cart', JSON.stringify(wsCart));
+            updateWsCart();
+        }
+
+        function completeWsSale() {
+            let name = document.getElementById('wsCustName').value.trim();
+            let phone = document.getElementById('wsCustPhone').value.trim();
+            let total = wsCart.reduce((sum, item) => sum + (item.rate * item.qty), 0);
+            let paid = parseFloat(document.getElementById('wsCashPaid').value) || 0;
+            
+            if(wsCart.length === 0) { alert('Cart is empty!'); return; }
+            if(!name) { alert('Please enter Dealer Name!'); return; }
+            if(!phone) { alert('Please enter Phone Number!'); return; }
+
+            let due = total - paid;
+            if(due < 0) due = 0;
+
+            let itemsList = wsCart.map(i => `${i.model} [Purpose: ${i.purpose}] (Qty: ${i.qty} @ ${i.rate})`).join(' | ');
+            let currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            deductStockForCart(wsCart);
+
+            transactions.unshift({ date: currentDate, type: 'Wholesale Supply', name, phone, items: itemsList, total, paid, due });
+            localStorage.setItem('nk_transactions', JSON.stringify(transactions));
+            alert(`Wholesale Bill Saved & Stock Updated for ${name}!\nTotal: Rs. ${total}\nPaid: Rs. ${paid}\nUdhar: Rs. ${due}`);
+
+            wsCart = [];
+            localStorage.removeItem('nk_ws_cart');
+            document.getElementById('wsCustName').value = '';
+            document.getElementById('wsCustPhone').value = '';
+            document.getElementById('wsCashPaid').value = '';
+            updateWsCart();
+            updateDatalists();
+        }
+
+        function sendWsWhatsApp() {
+            let phone = document.getElementById('wsCustPhone').value;
+            let name = document.getElementById('wsCustName').value || 'Dealer';
+            let total = document.getElementById('wsGrandTotal').innerText;
+            let due = document.getElementById('wsDisplayDue').innerText;
+            if(!phone) { alert('Please enter WhatsApp number!'); return; }
+            let msg = `Hello ${name}, wholesale bill from NK MOBILE SHOP. Total: ${total}. Balance Due: ${due}.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // --- CUSTOMER / DEALER KHATA FOLDERS & UDHAR WAPSI ---
+        function renderLedger() {
+            let tbody = document.getElementById('ledgerTable');
+            tbody.innerHTML = '';
+            
+            let customerMap = {};
+            transactions.forEach(t => {
+                if(!customerMap[t.name]) {
+                    customerMap[t.name] = { name: t.name, phone: t.phone, totalPurchases: 0, totalPaid: 0, balanceDue: 0, history: [] };
+                }
+                customerMap[t.name].totalPurchases += t.total;
+                customerMap[t.name].totalPaid += t.paid;
+                customerMap[t.name].balanceDue += t.due;
+                customerMap[t.name].history.push(t);
+            });
+
+            let customersArray = Object.values(customerMap);
+            if(customersArray.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No records found yet.</td></tr>`;
+                return;
+            }
+
+            customersArray.forEach(c => {
+                tbody.innerHTML += `<tr style="cursor:pointer;" onclick="openCustomerFolder('${c.name}')">
+                    <td><b>📁 ${c.name}</b></td>
+                    <td>${c.phone}</td>
+                    <td>Rs. ${c.totalPurchases.toLocaleString()}</td>
+                    <td style="color: var(--accent);">Rs. ${c.totalPaid.toLocaleString()}</td>
+                    <td style="color: var(--danger);">Rs. ${c.balanceDue.toLocaleString()}</td>
+                    <td><button class="btn" style="padding: 4px 10px; font-size: 11px;">Open Folder</button></td>
+                </tr>`;
+            });
+        }
+
+        function openCustomerFolder(customerName) {
+            currentActiveCustomer = customerName;
+            document.getElementById('customerListCard').style.display = 'none';
+            document.getElementById('customerFolderCard').style.display = 'block';
+            document.getElementById('folderTitle').innerText = `📁 Folder: ${customerName}`;
+            document.getElementById('receiveAmountInput').value = '';
+
+            refreshFolderView();
+        }
+
+        function refreshFolderView() {
+            let custTransactions = transactions.filter(t => t.name === currentActiveCustomer);
+            let totalD = custTransactions.reduce((sum, t) => sum + t.due, 0);
+
+            document.getElementById('folderDetails').innerHTML = `<b>Phone:</b> ${custTransactions[0]?.phone || 'N/A'} | <span style="color:var(--danger);">Current Total Udhar Balance: Rs. ${totalD.toLocaleString()}</span>`;
+
+            let tbody = document.getElementById('folderTransactionsTable');
+            tbody.innerHTML = '';
+            custTransactions.forEach(t => {
+                let isPayment = t.type === 'Payment Received (Udhar Wapsi)';
+                tbody.innerHTML += `<tr>
+                    <td>${t.date}</td>
+                    <td><span style="font-size:11px; background:${isPayment ? 'rgba(16,185,129,0.2)' : 'rgba(99,102,241,0.2)'}; padding:2px 6px; border-radius:4px; color:${isPayment ? 'var(--accent)' : 'var(--primary)'};">${t.type}</span></td>
+                    <td>${t.items}</td>
+                    <td>Rs. ${t.total.toLocaleString()}</td>
+                    <td style="color: var(--accent);">Rs. ${t.paid.toLocaleString()}</td>
+                    <td style="color: var(--danger);">Rs. ${t.due.toLocaleString()}</td>
+                </tr>`;
+            });
+        }
+
+        function receiveUdharPayment() {
+            let amount = parseFloat(document.getElementById('receiveAmountInput').value) || 0;
+            if(amount <= 0) { alert('Please enter a valid amount!'); return; }
+
+            let custTransactions = transactions.filter(t => t.name === currentActiveCustomer);
+            let phone = custTransactions[0]?.phone || 'N/A';
+            let currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            // New transaction entry specifically for Udhar Wapsi (Total = 0, Paid = amount, Due = -amount to deduct from remaining balance)
+            transactions.unshift({
+                date: currentDate,
+                type: 'Payment Received (Udhar Wapsi)',
+                name: currentActiveCustomer,
+                phone: phone,
+                items: `Cash received against old balance`,
+                total: 0,
+                paid: amount,
+                due: -amount
+            });
+
+            localStorage.setItem('nk_transactions', JSON.stringify(transactions));
+            alert(`Rs. ${amount.toLocaleString()} received successfully from ${currentActiveCustomer}! Balance updated.`);
+            
+            document.getElementById('receiveAmountInput').value = '';
+            refreshFolderView();
+        }
+
+        function closeFolder() {
+            currentActiveCustomer = '';
+            document.getElementById('customerFolderCard').style.display = 'none';
+            document.getElementById('customerListCard').style.display = 'block';
+            renderLedger();
+        }
+
+        // --- STOCK INVENTORY ---
+        function saveStock() {
+            let model = document.getElementById('stockModel').value.trim();
+            let imei = document.getElementById('stockImei').value.trim();
+            let cost = parseFloat(document.getElementById('stockCost').value) || 0;
+            let qty = parseInt(document.getElementById('stockQty').value) || 1;
+
+            if(!model) { alert('Please enter Model Name!'); return; }
+
+            let existing = stockList.find(s => s.model.toLowerCase() === model.toLowerCase());
+            if(existing) {
+                existing.qty += qty;
+                if(cost > 0) existing.cost = cost;
+            } else {
+                stockList.push({ model, imei: imei || 'N/A', cost, qty });
+            }
+
+            localStorage.setItem('nk_stock', JSON.stringify(stockList));
+
+            document.getElementById('stockModel').value = '';
+            document.getElementById('stockImei').value = '';
+            document.getElementById('stockCost').value = '';
+            document.getElementById('stockQty').value = '1';
+            renderStock();
+            updateDatalists();
+            alert('Stock saved successfully!');
+        }
+
+        function renderStock() {
+            let tbody = document.getElementById('stockTable');
+            tbody.innerHTML = '';
+            if(stockList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No stock items added.</td></tr>`;
+                return;
+            }
+            stockList.forEach((s, index) => {
+                tbody.innerHTML += `<tr>
+                    <td><b>${s.model}</b></td>
+                    <td>${s.imei}</td>
+                    <td>Rs. ${s.cost.toLocaleString()}</td>
+                    <td><b>${s.qty}</b></td>
+                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="deleteStock(${index})">Delete</button></td>
+                </tr>`;
+            });
+        }
+
+        function deleteStock(index) {
+            stockList.splice(index, 1);
+            localStorage.setItem('nk_stock', JSON.stringify(stockList));
+            renderStock();
+            updateDatalists();
+        }
+
+        // --- SHOP EXPENSES TRACKER ---
+        function saveExpense() {
+            let title = document.getElementById('expTitle').value.trim();
+            let amount = parseFloat(document.getElementById('expAmount').value) || 0;
+
+            if(!title || amount <= 0) { alert('Please enter Expense Title and Valid Amount!'); return; }
+
+            let currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            expenseList.unshift({ date: currentDate, title, amount });
+            localStorage.setItem('nk_expenses', JSON.stringify(expenseList));
+
+            document.getElementById('expTitle').value = '';
+            document.getElementById('expAmount').value = '';
+            renderExpenses();
+            updateDashboard();
+            alert('Expense recorded successfully!');
+        }
+
+        function renderExpenses() {
+            let tbody = document.getElementById('expenseTable');
+            tbody.innerHTML = '';
+            if(expenseList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted);">No expense records found.</td></tr>`;
+                return;
+            }
+            expenseList.forEach((exp, index) => {
+                tbody.innerHTML += `<tr>
+                    <td>${exp.date}</td>
+                    <td><b>${exp.title}</b></td>
+                    <td style="color: var(--warning);">Rs. ${exp.amount.toLocaleString()}</td>
+                    <td><button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="deleteExpense(${index})">Delete</button></td>
+                </tr>`;
+            });
+        }
+
+        function deleteExpense(index) {
+            expenseList.splice(index, 1);
+            localStorage.setItem('nk_expenses', JSON.stringify(expenseList));
+            renderExpenses();
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            let totalStockQty = stockList.reduce((sum, s) => sum + s.qty, 0);
+            document.getElementById('dashStockCount').innerText = totalStockQty;
+
+            let uniqueCusts = new Set(transactions.map(t => t.name)).size;
+            document.getElementById('dashCustCount').innerText = uniqueCusts;
+            
+            let customerMap = {};
+            transactions.forEach(t => {
+                if(!customerMap[t.name]) customerMap[t.name] = 0;
+                customerMap[t.name] += t.due;
+            });
+            let totalUdhar = Object.values(customerMap).reduce((a, b) => a + b, 0);
+            document.getElementById('dashUdharTotal').innerText = 'Rs. ' + totalUdhar.toLocaleString();
+
+            let totalExp = expenseList.reduce((sum, e) => sum + e.amount, 0);
+            document.getElementById('dashExpenseTotal').innerText = 'Rs. ' + totalExp.toLocaleString();
+        }
+
+        function downloadBackup() {
+            let data = { posCart, wsCart, stockList, expenseList, transactions };
+            let blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            let a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'nk_system_backup_' + new Date().toISOString().slice(0,10) + '.json';
+            a.click();
+        }
+
+        function restoreBackup(event) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let data = JSON.parse(e.target.result);
+                    if(data.transactions) {
+                        localStorage.setItem('nk_transactions', JSON.stringify(data.transactions));
+                        localStorage.setItem('nk_stock', JSON.stringify(data.stockList || []));
+                        localStorage.setItem('nk_expenses', JSON.stringify(data.expenseList || []));
+                        transactions = data.transactions;
+                        stockList = data.stockList || [];
+                        expenseList = data.expenseList || [];
+                        alert('Backup restored successfully!');
+                        updateDashboard();
+                        updateDatalists();
+                    }
+                } catch(err) {
+                    alert('Invalid backup file!');
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
