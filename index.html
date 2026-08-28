@@ -3,239 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwiftCore Systems | Premium Cloud Solutions</title>
+    <title>Swift Core Systems - Pro POS</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --bg-color: #f5f5f7;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --text-primary: #1d1d1f;
+            --accent: #0071e3;
+            --danger: #ff3b30;
+            --success: #34c759;
+            --border: rgba(0, 0, 0, 0.1);
         }
-        body {
-            background-color: #ffffff;
-            color: #333333;
-            line-height: 1.6;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 8%;
-            background: #ffffff;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid #eaeaea;
-        }
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .logo-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #007bff, #00d2ff);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
-        }
-        .logo-text {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1a1a1a;
-            letter-spacing: 0.5px;
-        }
-        .logo-text span {
-            color: #007bff;
-        }
-        nav a {
-            color: #555555;
-            text-decoration: none;
-            margin-left: 30px;
-            font-size: 15px;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-        nav a:hover {
-            color: #007bff;
-        }
-        .hero {
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0 20px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            margin-top: 75px;
-        }
-        .hero h1 {
-            font-size: 50px;
-            margin-bottom: 20px;
-            color: #1a1a1a;
-            font-weight: 800;
-        }
-        .hero h1 span {
-            color: #007bff;
-        }
-        .hero p {
-            font-size: 18px;
-            color: #666666;
-            max-width: 700px;
-            margin-bottom: 40px;
-        }
-        .btn {
-            background-color: #007bff;
-            color: #ffffff;
-            padding: 15px 40px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
-        }
-        .btn:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
-        .section {
-            padding: 100px 8%;
-        }
-        .section-title {
-            text-align: center;
-            font-size: 40px;
-            margin-bottom: 20px;
-            color: #1a1a1a;
-        }
-        .section-subtitle {
-            text-align: center;
-            font-size: 18px;
-            color: #666666;
-            margin-bottom: 70px;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        .card {
-            background: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            border: 1px solid #eaeaea;
-            transition: 0.3s;
-            text-align: left;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-        .card h3 {
-            margin-bottom: 15px;
-            color: #1a1a1a;
-            font-size: 22px;
-        }
-        .card p {
-            color: #666666;
-            font-size: 16px;
-        }
-        .contact-info {
-            text-align: center;
-            padding: 50px;
-            background: #007bff;
-            color: white;
-            border-radius: 10px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .contact-info h2 { margin-bottom: 15px; }
-        .contact-info a { color: white; font-weight: bold; text-decoration: underline; font-size: 18px; }
-
-        footer {
-            text-align: center;
-            padding: 40px 8%;
-            background: #1a1a1a;
-            color: #999999;
-            border-top: 1px solid #333333;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background: var(--bg-color); color: var(--text-primary); padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--card-bg); padding: 15px 20px; border-radius: 14px; backdrop-filter: blur(20px); border: 1px solid var(--border); }
+        h1 { font-size: 20px; font-weight: 600; }
+        .branding { font-size: 12px; color: #86868b; margin-top: 2px; }
+        .nav-tabs { display: flex; gap: 10px; }
+        .tab-btn { background: none; border: none; padding: 8px 14px; font-size: 14px; font-weight: 500; cursor: pointer; color: #86868b; border-radius: 8px; transition: all 0.3s; }
+        .tab-btn.active { background: var(--accent); color: white; }
+        .section { display: none; background: var(--card-bg); padding: 20px; border-radius: 14px; backdrop-filter: blur(20px); border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .section.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 10px; border: 1px solid var(--border); text-align: center; }
+        .stat-card h3 { font-size: 13px; color: #86868b; margin-bottom: 5px; }
+        .stat-card p { font-size: 18px; font-weight: 600; }
+        .form-group { margin-bottom: 15px; position: relative; }
+        label { display: block; font-size: 13px; margin-bottom: 5px; font-weight: 500; }
+        input, select { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; outline: none; background: rgba(255,255,255,0.9); }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,0.1); }
+        .btn { background: var(--accent); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.9; }
+        .btn-danger { background: var(--danger); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+        th { font-weight: 600; color: #86868b; }
+        .suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border); border-radius: 8px; max-height: 120px; overflow-y: auto; z-index: 10; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .suggestion-item { padding: 8px 12px; cursor: pointer; font-size: 13px; }
+        .suggestion-item:hover { background: #f0f0f5; }
+        .footer-credit { text-align: center; font-size: 11px; color: #86868b; margin-top: 20px; }
     </style>
 </head>
 <body>
 
+<div class="container">
     <header>
-        <div class="logo-container">
-            <div class="logo-icon">SC</div>
-            <div class="logo-text">SwiftCore <span>Systems</span></div>
+        <div>
+            <h1>Swift Core Systems - POS</h1>
+            <div class="branding">Powered by Swift Core System</div>
         </div>
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#services">Services</a>
-            <a href="#portfolio">Portfolio</a>
-            <a href="#contact">Contact</a>
-        </nav>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('home')">Home</button>
+            <button class="tab-btn" onclick="switchTab('stock')">Stock</button>
+            <button class="tab-btn" onclick="switchTab('wholesale')">Wholesale</button>
+            <button class="tab-btn" onclick="switchTab('sales')">Daily Sales</button>
+        </div>
     </header>
 
-    <section class="hero" id="home">
-        <h1>Premium <span>Cloud Software Solutions</span></h1>
-        <p>Empowering your business with high-performance, smooth, and custom cloud POS systems and digital platforms.</p>
-        <a href="#services" class="btn">Explore Services</a>
-    </section>
-
-    <section class="section" id="services">
-        <h2 class="section-title">Our Premium Services</h2>
-        <p class="section-subtitle">Our expertise lies in making your business digital, efficient, and highly profitable.</p>
-        <div class="services-grid">
-            <div class="card">
-                <h3>Cloud POS Systems</h3>
-                <p>Lightning-fast online billing systems running seamlessly on your mobile, computer, and laptop, accessible from anywhere.</p>
+    <!-- HOME TAB -->
+    <div id="home" class="section active">
+        <h2 style="font-size: 16px; margin-bottom: 15px;">Dashboard Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Sales</h3>
+                <p id="dashSales" style="color: var(--accent);">Rs 0</p>
             </div>
-            <div class="card">
-                <h3>Multi-Warehouse Stock</h3>
-                <p>Detailed and independent stock management for every warehouse or shop, with complete tracking of loose items and packs.</p>
+            <div class="stat-card">
+                <h3>Total Profit</h3>
+                <p id="dashProfit" style="color: var(--success);">Rs 0</p>
             </div>
-            <div class="card">
-                <h3>Custom Business Apps</h3>
-                <p>Tailor-made software specifically engineered for electronics, mobile retail, footwear, and commercial stores.</p>
-            </div>
-            <div class="card">
-                <h3>E-commerce Websites</h3>
-                <p>Full-fledged online stores where your customers can order directly, expanding your market reach.</p>
-            </div>
-            <div class="card">
-                <h3>Digital Marketing</h3>
-                <p>Targeted campaigns on Facebook and Instagram to scale up your brand awareness and boost customer acquisition.</p>
-            </div>
-            <div class="card">
-                <h3>Branding & Design</h3>
-                <p>Professional logo design, business cards, and digital assets that make your brand stand out from competitors.</p>
+            <div class="stat-card">
+                <h3>Total Loss</h3>
+                <p id="dashLoss" style="color: var(--danger);">Rs 0</p>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section class="section" id="contact">
-        <h2 class="section-title">Get In Touch</h2>
-        <p class="section-subtitle">Ready to scale your project? Drop us an email or reach out directly.</p>
-        <div class="contact-info">
-            <h2>SwiftCore Systems - Pakistan</h2>
-            <p>Direct Business Inquiries:</p>
-            <a href="mailto:usama1khan4@gmail.com">usama1khan4@gmail.com</a>
+    <!-- STOCK TAB -->
+    <div id="stock" class="section">
+        <h2 style="font-size: 16px; margin-bottom: 15px;">Stock & Purchase Management</h2>
+        <div class="form-group">
+            <label>Item Name (Auto-complete search)</label>
+            <input type="text" id="stockName" placeholder="Type item name..." oninput="handleSearch('stockName', 'stockSuggestions', 'stock')">
+            <div id="stockSuggestions" class="suggestions"></div>
         </div>
-    </section>
+        <div class="form-group">
+            <label>Purchase Price (Rs)</label>
+            <input type="number" id="stockBuy" placeholder="0">
+        </div>
+        <div class="form-group">
+            <label>Sale Price (Rs)</label>
+            <input type="number" id="stockSell" placeholder="0">
+        </div>
+        <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="stockQty" placeholder="0">
+        </div>
+        <button class="btn" onclick="addStock()">Add to Stock</button>
 
-    <footer>
-        <p>&copy; 2026 SwiftCore Systems. All rights reserved.</p>
-    </footer>
+        <table>
+            <thead>
+                <tr><th>Item</th><th>Buy Price</th><th>Sell Price</th><th>Qty</th><th>Action</th></tr>
+            </thead>
+            <tbody id="stockTable"></tbody>
+        </table>
+    </div>
 
+    <!-- WHOLESALE TAB -->
+    <div id="wholesale" class="section">
+        <h2 style="font-size: 16px; margin-bottom: 15px;">Wholesale Khata (Customer Ledger)</h2>
+        <div class="form-group">
+            <label>Customer Name</label>
+            <input type="text" id="wsCustomer" placeholder="Customer name...">
+        </div>
+        <div class="form-group">
+            <label>Details / Item</label>
+            <input type="text" id="wsDetails" placeholder="Item description...">
+        </div>
+        <div class="form-group">
+            <label>Amount (Rs)</label>
+            <input type="number" id="wsAmount" placeholder="0">
+        </div>
+        <button class="btn" onclick="addWholesale()">Add Entry</button>
+
+        <table>
+            <thead>
+                <tr><th>Customer</th><th>Details</th><th>Amount</th><th>Action</th></tr>
+            </thead>
+            <tbody id="wsTable"></tbody>
+        </table>
+    </div>
+
+    <!-- DAILY SALES TAB -->
+    <div id="sales" class="section">
+        <h2 style="font-size: 16px; margin-bottom: 15px;">Daily Sale, Profit & Loss</h2>
+        <div class="form-group">
+            <label>Select Item Sold (Auto-complete)</label>
+            <input type="text" id="saleItemName" placeholder="Search item..." oninput="handleSearch('saleItemName', 'saleSuggestions', 'sale')">
+            <div id="saleSuggestions" class="suggestions"></div>
+        </div>
+        <div class="form-group">
+            <label>Sold Quantity</label>
+            <input type="number" id="saleQty" value="1" placeholder="1">
+        </div>
+        <button class="btn" onclick="recordSale()">Record Sale</button>
+
+        <table>
+            <thead>
+                <tr><th>Item</th><th>Qty</th><th>Sale Rev</th><th>Profit / Loss</th><th>Action</th></tr>
+            </thead>
+            <tbody id="salesTable"></tbody>
+        </table>
+    </div>
+
+    <div class="footer-credit">Developed by Swift Core System</div>
+</div>
+
+<script>
+    let stockData = JSON.parse(localStorage.getItem('sc_stock')) || [];
+    let wsData = JSON.parse(localStorage.getItem('sc_ws')) || [];
+    let salesData = JSON.parse(localStorage.getItem('sc_sales')) || [];
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+        updateDashboard();
+    }
+
+    function handleSearch(inputId, suggId, type) {
+        let val = document.getElementById(inputId).value.toLowerCase();
+        let suggBox = document.getElementById(suggId);
+        suggBox.innerHTML = '';
+        if(val.length < 1) { suggBox.style.display = 'none'; return; }
+        
+        let matches = stockData.filter(item => item.name.toLowerCase().includes(val));
+        if(matches.length > 0) {
+            suggBox.style.display = 'block';
+            matches.forEach(m => {
+                let div = document.createElement('div');
+                div.className = 'suggestion-item';
+                div.innerText = m.name;
+                div.onclick = () => {
+                    document.getElementById(inputId).value = m.name;
+                    suggBox.style.display = 'none';
+                };
+                suggBox.appendChild(div);
+            });
+        } else {
+            suggBox.style.display = 'none';
+        }
+    }
+
+    function addStock() {
+        let name = document.getElementById('stockName').value;
+        let buy = parseFloat(document.getElementById('stockBuy').value) || 0;
+        let sell = parseFloat(document.getElementById('stockSell').value) || 0;
+        let qty = parseInt(document.getElementById('stockQty').value) || 0;
+        if(!name) return alert('Enter item name');
+        
+        stockData.push({name, buy, sell, qty});
+        localStorage.setItem('sc_stock', JSON.stringify(stockData));
+        document.getElementById('stockName').value = '';
+        document.getElementById('stockBuy').value = '';
+        document.getElementById('stockSell').value = '';
+        document.getElementById('stockQty').value = '';
+        renderStock();
+    }
+
+    function renderStock() {
+        let html = '';
+        stockData.forEach((item, index) => {
+            html += `<tr><td>${item.name}</td><td>Rs ${item.buy}</td><td>Rs ${item.sell}</td><td>${item.qty}</td><td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px;" onclick="deleteStock(${index})">Delete</button></td></tr>`;
+        });
+        document.getElementById('stockTable').innerHTML = html;
+    }
+    function deleteStock(i) { stockData.splice(i,1); localStorage.setItem('sc_stock', JSON.stringify(stockData)); renderStock(); }
+
+    function addWholesale() {
+        let customer = document.getElementById('wsCustomer').value;
+        let details = document.getElementById('wsDetails').value;
+        let amount = parseFloat(document.getElementById('wsAmount').value) || 0;
+        if(!customer) return alert('Enter customer name');
+        
+        wsData.push({customer, details, amount});
+        localStorage.setItem('sc_ws', JSON.stringify(wsData));
+        document.getElementById('wsCustomer').value = '';
+        document.getElementById('wsDetails').value = '';
+        document.getElementById('wsAmount').value = '';
+        renderWholesale();
+    }
+
+    function renderWholesale() {
+        let html = '';
+        wsData.forEach((item, index) => {
+            html += `<tr><td>${item.customer}</td><td>${item.details}</td><td>Rs ${item.amount}</td><td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px;" onclick="deleteWs(${index})">Delete</button></td></tr>`;
+        });
+        document.getElementById('wsTable').innerHTML = html;
+    }
+    function deleteWs(i) { wsData.splice(i,1); localStorage.setItem('sc_ws', JSON.stringify(wsData)); renderWholesale(); }
+
+    function recordSale() {
+        let itemName = document.getElementById('saleItemName').value;
+        let qty = parseInt(document.getElementById('saleQty').value) || 1;
+        let stockItem = stockData.find(s => s.name.toLowerCase() === itemName.toLowerCase());
+        
+        if(!stockItem) return alert('Item not found in stock!');
+        
+        let revenue = stockItem.sell * qty;
+        let cost = stockItem.buy * qty;
+        let profitLoss = revenue - cost;
+        
+        salesData.push({name: stockItem.name, qty, revenue, profitLoss});
+        localStorage.setItem('sc_sales', JSON.stringify(salesData));
+        document.getElementById('saleItemName').value = '';
+        renderSales();
+        updateDashboard();
+    }
+
+    function renderSales() {
+        let html = '';
+        salesData.forEach((item, index) => {
+            let color = item.profitLoss >= 0 ? 'var(--success)' : 'var(--danger)';
+            let text = item.profitLoss >= 0 ? `Profit: Rs ${item.profitLoss}` : `Loss: Rs ${item.profitLoss}`;
+            html += `<tr><td>${item.name}</td><td>${item.qty}</td><td>Rs ${item.revenue}</td><td style="color:${color}; font-weight:600;">${text}</td><td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px;" onclick="deleteSale(${index})">Delete</button></td></tr>`;
+        });
+        document.getElementById('salesTable').innerHTML = html;
+    }
+    function deleteSale(i) { salesData.splice(i,1); localStorage.setItem('sc_sales', JSON.stringify(salesData)); renderSales(); updateDashboard(); }
+
+    function updateDashboard() {
+        let totalSales = 0, totalProfit = 0, totalLoss = 0;
+        salesData.forEach(s => {
+            totalSales += s.revenue;
+            if(s.profitLoss >= 0) totalProfit += s.profitLoss;
+            else totalLoss += Math.abs(s.profitLoss);
+        });
+        document.getElementById('dashSales').innerText = `Rs ${totalSales}`;
+        document.getElementById('dashProfit').innerText = `Rs ${totalProfit}`;
+        document.getElementById('dashLoss').innerText = `Rs ${totalLoss}`;
+    }
+
+    renderStock();
+    renderWholesale();
+    renderSales();
+    updateDashboard();
+</script>
 </body>
 </html>
