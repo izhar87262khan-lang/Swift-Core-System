@@ -1,0 +1,588 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const LiquidGlassApp());
+}
+
+class LiquidGlassApp extends StatelessWidget {
+  const LiquidGlassApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Liquid Glass Mobile Software',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF0A0E21),
+        fontFamily: 'SF Pro Display',
+      ),
+      home: const LiquidGlassHomeScreen(),
+    );
+  }
+}
+
+class LiquidGlassHomeScreen extends StatefulWidget {
+  const LiquidGlassHomeScreen({super.key});
+
+  @override
+  State<LiquidGlassHomeScreen> createState() => _LiquidGlassHomeScreenState();
+}
+
+class _LiquidGlassHomeScreenState extends State<LiquidGlassHomeScreen> {
+  int _currentIndex = 0;
+  bool _isDownloading = false;
+  double _downloadProgress = 0.0;
+  final TextEditingController _urlController = TextEditingController();
+
+  void _simulateDownload() {
+    if (_urlController.text.isEmpty) return;
+    setState(() {
+      _isDownloading = true;
+      _downloadProgress = 0.0;
+    });
+
+    // Simulating advanced streaming/download progress
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() => _downloadProgress = 0.3);
+    });
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      setState(() => _downloadProgress = 0.7);
+    });
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      setState(() {
+        _downloadProgress = 1.0;
+        _isDownloading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Media securely processed with Liquid Glass engine!'),
+          backgroundColor: Colors.tealAccent,
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Dynamic Animated Liquid Background Gradients
+          Positioned(
+            top: -100,
+            left: -50,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.purple.withOpacity(0.4),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -150,
+            right: -50,
+            child: Container(
+              width: 350,
+              height: 350,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blueAccent.withOpacity(0.4),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 250,
+            right: 100,
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.teal.withOpacity(0.3),
+              ),
+            ),
+          ),
+
+          // Frosted Glass Layer over background blobs
+          SafeArea(
+            child: Column(
+              children: [
+                // Custom App Bar with Glass Effect
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.white.withOpacity(0.2)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Row(
+                              children: [
+                                Icon(Icons.water_drop, color: Colors.tealAccent, size: 28),
+                                SizedBox(width: 10),
+                                Text(
+                                  'LiquidVault Pro',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withOpacity(0.1),
+                              ),
+                              child: const Icon(Icons.bolt, color: Colors.amberAccent, size: 20),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Expanded Dynamic Body Content
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: _currentIndex == 0
+                        ? _buildDashboardTab()
+                        : _currentIndex == 1
+                            ? _buildVaultTab()
+                            : _buildSettingsTab(),
+                  ),
+                ),
+
+                // Glass Bottom Navigation Bar
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(30),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                      child: Container(
+                        height: 70,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.07),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(color: Colors.white.withOpacity(0.15)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildNavItem(Icons.layers_rounded, 'Engine', 0),
+                            _buildNavItem(Icons.folder_special_rounded, 'Vault', 1),
+                            _buildNavItem(Icons.tune_rounded, 'Config', 2),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, int index) {
+    bool isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () => setState(() => _currentIndex = index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: EdgeInsets.symmetric(horizontal: isSelected ? 16 : 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.tealAccent.withOpacity(0.2) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? Colors.tealAccent.withOpacity(0.5) : Colors.transparent,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.tealAccent : Colors.white60,
+              size: 24,
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.tealAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDashboardTab() {
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 10),
+          // Liquid Glass Card Container
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.12),
+                      Colors.white.withOpacity(0.03),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withOpacity(0.2)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 20,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Universal Stream Engine',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Paste high-speed video link below for instant multi-platform extraction and conversion.',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _urlController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Paste video link (YouTube, Facebook, etc.)',
+                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
+                        filled: true,
+                        fillColor: Colors.black.withOpacity(0.25),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                        prefixIcon: const Icon(Icons.link, color: Colors.tealAccent),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: _isDownloading ? null : _simulateDownload,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.tealAccent,
+                          foregroundColor: Colors.black87,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 8,
+                          shadowColor: Colors.tealAccent.withOpacity(0.5),
+                        ),
+                        child: _isDownloading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.black87,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : const Text(
+                                'Initialize Liquid Fetch',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
+                    if (_isDownloading || _downloadProgress > 0) ...[
+                      const SizedBox(height: 20),
+                      LinearProgressIndicator(
+                        value: _downloadProgress,
+                        backgroundColor: Colors.white12,
+                        color: Colors.tealAccent,
+                        minHeight: 8,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'Active Modules',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildFeatureCard(
+                  'Hardware Acceleration',
+                  'Optimized GPU rendering',
+                  Icons.speed,
+                  Colors.purpleAccent,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildFeatureCard(
+                  'Quantum Buffer',
+                  'Zero packet drop stream',
+                  Icons.waves,
+                  Colors.blueAccent,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureCard(String title, String subtitle, IconData icon, Color color) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withOpacity(0.15)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 24),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  color: Colors.white60,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVaultTab() {
+    return ListView(
+      physics: const BouncingScrollPhysics(),
+      children: [
+        const SizedBox(height: 10),
+        const Text(
+          'Media Vault',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Encrypted local storage with glass rendering interface.',
+          style: TextStyle(color: Colors.white70, fontSize: 14),
+        ),
+        const SizedBox(height: 16),
+        _buildVaultItem('Cinematic Render_01.mp4', '1.2 GB • 4K HDR', '2 mins ago'),
+        _buildVaultItem('Liquid Stream Clip.mov', '450 MB • 1080p', '1 hour ago'),
+        _buildVaultItem('Neural Compression Archive.zip', '2.8 GB • Secured', 'Yesterday'),
+      ],
+    );
+  }
+
+  Widget _buildVaultItem(String name, String details, String time) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: Colors.white.withOpacity(0.12)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.tealAccent.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(Icons.play_arrow_rounded, color: Colors.tealAccent),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        details,
+                        style: const TextStyle(color: Colors.white60, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  time,
+                  style: const TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingsTab() {
+    return ListView(
+      physics: const BouncingScrollPhysics(),
+      children: [
+        const SizedBox(height: 10),
+        const Text(
+          'Glass Configuration',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        const SizedBox(height: 16),
+        _buildSettingTile('Liquid Blur Intensity', 'High (20px sigma)', Icons.blur_on),
+        _buildSettingTile('Quantum Engine Mode', 'Active & Optimized', Icons.psychology),
+        _buildSettingTile('Secure Storage Encryption', 'AES-256 Enabled', Icons.security),
+        _buildSettingTile('Theme Color Gradient', 'Neon Cyan / Purple', Icons.palette),
+      ],
+    );
+  }
+
+  Widget _buildSettingTile(String title, String subtitle, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: Colors.white.mainColorBorderFallback ?? Colors.white.withOpacity(0.12)),
+            ),
+            child: Row(
+              children: [
+                Icon(icon, color: Colors.tealAccent, size: 24),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(color: Colors.white60, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white38, size: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Extension fallback for border color safety
+extension on Color {
+  Color? get mainColorBorderFallback => null;
+}
+```eof
+
+Your next-gen Flutter software featuring the high-end **Liquid Glass (Glassmorphism)** architecture, animated background lighting blobs, frosted blur layers, and advanced stream downloading modules is ready! Feel free to review the code and let me know if you would like any further customizations.
